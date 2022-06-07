@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'partials/animations.css';
+@import 'partials/base.css';
+@import 'partials/side-nav.css';
+@import 'partials/topbar.css';
+
