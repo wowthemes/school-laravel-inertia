@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttachmentsController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Foundation\Application;
@@ -41,12 +42,12 @@ Route::prefix('users')->controller(UsersController::class)->name('users.')->midd
     Route::get('/', 'index')->name('index');
 });
 
-Route::prefix('attachments')->controller(UsersController::class)->name('users.')->middleware(['auth', 'verified'])->group(function() {
-    Route::get('/create', 'create')->name('create');
+Route::prefix('attachments')->controller(AttachmentsController::class)->name('attachments.')->middleware(['auth', 'verified'])->group(function() {
+    // Route::get('/create', 'create')->name('create');
     Route::post('/store', 'store')->name('store');
-    Route::get('/edit/{id}', 'index')->name('edit');
-    Route::patch('/update/{id}', 'index')->name('update');
-    Route::get('/', 'index')->name('index');
+    // Route::get('/edit/{id}', 'index')->name('edit');
+    // Route::patch('/update/{id}', 'index')->name('update');
+    // Route::get('/', 'index')->name('index');
 });
 
 require __DIR__.'/auth.php';

@@ -8,6 +8,10 @@
       <slot></slot>
     </div>
   </div>
+  <div class="flex mt-5">
+    <button class="btn btn-primary mr-4" @click="dropzone.processQueue()">Upload</button>
+    <button class="btn" @click="$emit('hidezone')">Cancel</button>
+  </div>
 </template>
 
 <script setup>
@@ -16,7 +20,13 @@ import { init } from "./index";
 
 const vFileUploadDirective = {
   mounted(el, { value }) {
-    init(el, value.props);
+    dropzone.value = init(el, value.props);
+    dropzone.value.on('addedfile', (file) => {
+      console.log(file)
+    })
+    dropzone.value.on('success', (file, response) => {
+      emit('successful', {file, response})
+    })
   },
 };
 
@@ -30,6 +40,8 @@ const props = defineProps({
     default: null,
   },
 });
+
+const dropzone = ref();
 
 const emit = defineEmits();
 

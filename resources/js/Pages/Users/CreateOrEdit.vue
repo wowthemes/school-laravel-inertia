@@ -3,6 +3,7 @@ import BreezeAuthenticatedLayout from "@/Layouts/Authenticated.vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import { Inertia } from '@inertiajs/inertia'
 import { defineProps, ref } from 'vue';
+import AttachmentModal from "@/Components/AttachmentModal.vue";
 
 const props = defineProps({
   head_title: String,
@@ -18,6 +19,8 @@ const form = useForm({
   password: '',
   password_confirmation: '',
 });
+
+const showModal = ref(false);
 
 const submit = () => {
   Inertia.post('/users/store', form)
@@ -41,23 +44,7 @@ const submit = () => {
           </div>
           <form @submit.prevent="form.post('/users/store')">
             <div class="p-5">
-              <div>
-                <Dropzone ref-key="dropzoneSingleRef" :options="{
-                    url: 'https://httpbin.org/post',
-                    thumbnailWidth: 150,
-                    maxFilesize: 0.5,
-                    maxFiles: 1,
-                    headers: { 'My-Awesome-Header': 'header value' },
-                  }" class="dropzone">
-                  <div class="text-lg font-medium">
-                    Drop files here or click to upload.
-                  </div>
-                  <div class="text-gray-600">
-                    This is just a demo dropzone. Selected files are
-                    <span class="font-medium">not</span> actually uploaded.
-                  </div>
-                </Dropzone>
-              </div>
+              <AttachmentModal :show="showModal" @hidden="showModal = false" />
               <div class="mt-3">
                 <label for="regular-form-1" class="form-label">Name</label>
                 <input
@@ -137,5 +124,6 @@ const submit = () => {
         </div>
       </div>
     </div>
+
   </BreezeAuthenticatedLayout>
 </template>

@@ -3,6 +3,7 @@ import Dropzone from "dropzone";
 const init = (el, props) => {
   Dropzone.autoDiscover = false;
   el.dropzone = new Dropzone(el, props.options);
+  return el.dropzone;
 };
 
 export { init };
