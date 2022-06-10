@@ -46,8 +46,8 @@ Route::prefix('attachments')->controller(AttachmentsController::class)->name('at
     // Route::get('/create', 'create')->name('create');
     Route::post('/store', 'store')->name('store');
     // Route::get('/edit/{id}', 'index')->name('edit');
-    // Route::patch('/update/{id}', 'index')->name('update');
-    // Route::get('/', 'index')->name('index');
+    Route::patch('/update/{attachment:id}', 'update')->name('update');
+    Route::get('/', 'index')->name('index');
 });
 
 require __DIR__.'/auth.php';

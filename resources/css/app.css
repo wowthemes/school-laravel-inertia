@@ -148,3 +148,10 @@
 @import "./components/_source-preview.css";
 @import "./components/_full-calendar.css";
 @import "./components/_pristine.css";
+
+
+@media (min-width: 1024px) {
+  .modal .modal-dialog.modal-xl {
+    width: 1200px;
+  }
+}

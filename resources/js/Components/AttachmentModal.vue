@@ -1,6 +1,7 @@
 <script setup>
-import { defineProps, ref } from "vue";
-import { usePage } from '@inertiajs/inertia-vue3'
+import { defineProps, ref, onMounted, defineEmits } from "vue";
+import { usePage, useForm } from '@inertiajs/inertia-vue3'
+import { Inertia } from "@inertiajs/inertia";
 
 defineProps({
   show: Boolean,
@@ -9,21 +10,51 @@ defineProps({
 const showModal = ref(false);
 const showdropzone = ref(false);
 const dropzoneSingleRef = ref(null);
+const attachments = ref([]);
+const selected_image = ref(null);
+const show_sidebar = ref(false);
+
+const insertImage = (img) => {
+  emit('selected-image', faker.id); 
+  showModal.value = false; 
+  selected_image.value = faker.url;
+}
+
+const saveImageDetails = () => {
+  const form = useForm(selected_image.value)
+  axios.patch(`/attachments/update/${selected_image.value.id}`, selected_image.value)
+  .then(res => {
+
+  })
+}
+
+onMounted(() => {
+  axios.get('/attachments')
+  .then(res => {
+    attachments.value = res.data.data
+  })
+})
+const emits = defineEmits(['selected-image', 'remove'])
 </script>
 
 <template>
   <!-- BEGIN: Modal Toggle -->
   <div class="text-center">
-    <a href="javascript:;" @click="showModal = true" class="btn btn-primary"
-      >Show Modal</a
+    <img :src="selected_image.url" v-if="selected_image" class="inline-block rounded-md shadow" style="width: 150px;height:auto;" /><br/>
+    <a href="javascript:;" v-if="selected_image" class="btn mt-3 mr-3" @click.prevent="selected_image = ''; $emit('remove')">Remove</a>
+    <a href="javascript:;" @click="showModal = true" class="btn btn-primary mt-4"
+      >Select Image</a
     >
   </div>
   <!-- BEGIN: Modal Content -->
   <Modal :show="showModal" @hidden="showModal = false" size="modal-xl">
     <ModalBody>
-      <div class="mx-6">
+      <div class="mx-6 grid grid-cols-12 gap-3">
         
-        <div class="col-span-12 lg:col-span-9 2xl:col-span-10">
+        <div :class="{
+          'col-span-12': (!show_sidebar || !selected_image),
+          'col-span-9': (show_sidebar && selected_image),
+        }">
           <!-- BEGIN: File Manager Filter -->
           <div class="intro-y flex flex-col-reverse sm:flex-row items-center">
             <div class="w-full sm:w-auto relative mr-auto mt-3 sm:mt-0">
@@ -157,7 +188,7 @@ const dropzoneSingleRef = ref(null);
               :options="{
                 url: route('attachments.store'),
                 thumbnailWidth: 150,
-                maxFilesize: 0.5,
+                maxFilesize: 1.0,
                 autoProcessQueue: false,
                 uploadMultiple: true,
                 maxFiles: 10,
@@ -188,7 +219,7 @@ const dropzoneSingleRef = ref(null);
           <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5">
             
             <div
-              v-for="(faker, fakerKey) in 0"
+              v-for="(faker, fakerKey) in attachments"
               :key="fakerKey"
               class="
                 intro-y
@@ -211,33 +242,29 @@ const dropzoneSingleRef = ref(null);
                   relative
                   zoom-in
                 "
+                @click.prevent="show_sidebar = true; selected_image = faker"
               >
                 <div class="absolute left-0 top-0 mt-3 ml-3">
                   <input
                     class="form-check-input border border-slate-500"
                     type="checkbox"
-                    :checked="faker.trueFalse[0]"
+                    :checked="false"
                   />
                 </div>
                 <a
-                  v-if="faker.files[0].type == 'Empty Folder'"
+                  v-if="false"
                   href=""
                   class="w-3/5 file__icon file__icon--empty-directory mx-auto"
                 ></a>
                 <a
-                  v-else-if="faker.files[0].type == 'Folder'"
-                  href=""
-                  class="w-3/5 file__icon file__icon--directory mx-auto"
-                ></a>
-                <a
-                  v-else-if="faker.files[0].type == 'Image'"
+                  v-else-if="true"
                   href=""
                   class="w-3/5 file__icon file__icon--image mx-auto"
                 >
                   <div class="file__icon--image__preview image-fit">
                     <img
                       alt="Midone Tailwind HTML Admin Template"
-                      :src="$_.toLower(faker.files[0]['fileName'])"
+                      :src="faker.url"
                     />
                   </div>
                 </a>
@@ -254,13 +281,11 @@ const dropzoneSingleRef = ref(null);
                   href=""
                   class="block font-medium mt-4 text-center truncate"
                   >{{
-                    faker.files[0].fileName.split("/")[
-                      faker.files[0].fileName.split("/").length - 1
-                    ]
+                    faker.name
                   }}</a
                 >
-                <div class="text-slate-500 text-xs text-center mt-0.5">
-                  {{ faker.files[0].size }}
+                <div class="text-slate-500 text-xs text-center mt-0.5" v-if="faker.size">
+                  {{ (faker.size / 1024).toFixed(1) }} KB
                 </div>
                 <Dropdown class="absolute top-0 right-0 mr-2 mt-3 ml-auto">
                   <DropdownToggle
@@ -300,6 +325,30 @@ const dropzoneSingleRef = ref(null);
             </nav>
           </div>
           <!-- END: Pagination -->
+        </div>
+
+        <div class="col-span-3 border-l px-4" v-if="show_sidebar && selected_image">
+          <form>
+            <img :src="selected_image.url" class="rounded-md shadow" style="width: 150px;" />
+
+            <div class="mt-3">
+              <label class="form-label">Title</label>
+              <input type="text" @focusout="saveImageDetails()" v-model="selected_image.name" placeholder="Title" class="form-control" />
+            </div>
+
+            <div class="mt-3">
+              <label class="form-label">Alt</label>
+              <input type="text" @focusout="saveImageDetails()" v-model="selected_image.alt" placeholder="Alt" class="form-control" />
+            </div>
+
+            <div class="mt-3 mb-3">
+              <label class="form-label">Description</label>
+              <textarea @focusout="saveImageDetails()" v-model="selected_image.description" placeholder="Description" class="form-control"></textarea>
+            </div>
+
+            <button class="btn btn-primary mr-3" @click.prevent="showModal = false; show_sidebar = false">Insert</button>
+            <button class="btn btn-default" @click.prevent="selected_image = {}; show_sidebar = false">Cancel</button>
+          </form>
         </div>
       </div>
     </ModalBody>

@@ -18,6 +18,7 @@ const form = useForm({
   email: '',
   password: '',
   password_confirmation: '',
+  avatar: 0,
 });
 
 const showModal = ref(false);
@@ -44,7 +45,9 @@ const submit = () => {
           </div>
           <form @submit.prevent="form.post('/users/store')">
             <div class="p-5">
-              <AttachmentModal :show="showModal" @hidden="showModal = false" />
+              
+              <AttachmentModal @selected-image="form.avatar = $event" @remove="form.avatar = 0" />
+
               <div class="mt-3">
                 <label for="regular-form-1" class="form-label">Name</label>
                 <input

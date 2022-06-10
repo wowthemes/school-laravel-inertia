@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AttachmentRequest;
 use App\Models\Attachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class AttachmentsController extends Controller
 {
+    public function index(Request $request)
+    {
+        $attachments = Attachment::paginate();
+
+        return response()->json($attachments);
+    }
+
     public function store(Request $request)
     {
         $files = $request->file('file');
@@ -35,5 +43,16 @@ class AttachmentsController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    public function update(Attachment $attachment, AttachmentRequest $request)
+    {
+        foreach ($request->validated() as $key => $value) {
+            $attachment->{$key} = $value;
+        }
+
+        $attachment->save();
+
+        return $attachment;
     }
 }
