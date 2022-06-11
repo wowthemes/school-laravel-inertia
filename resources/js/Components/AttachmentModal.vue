@@ -13,6 +13,8 @@ const dropzoneSingleRef = ref(null);
 const attachments = ref([]);
 const selected_image = ref(null);
 const show_sidebar = ref(false);
+const page = ref(1);
+const last_page = ref(1);
 
 const insertImage = (img) => {
   emit('selected-image', faker.id); 
@@ -27,12 +29,19 @@ const saveImageDetails = () => {
 
   })
 }
-
-onMounted(() => {
-  axios.get('/attachments')
+const getAttachments = () => {
+  axios.get('/attachments', {params: {page: page.value}})
   .then(res => {
-    attachments.value = res.data.data
+    if(_.size(res.data.data)) {
+      _.each(res.data.data, (value) => {
+        attachments.value.push(value)
+      })
+    }
+    last_page.value = res.data.last_page
   })
+}
+onMounted(() => {
+  getAttachments();
 })
 const emits = defineEmits(['selected-image', 'remove'])
 </script>
@@ -320,8 +329,8 @@ const emits = defineEmits(['selected-image', 'remove'])
               mt-6
             "
           >
-            <nav class="w-full text-center sm:mr-auto">
-              <button class="btn">Load More <LoadingIcon icon="puff" /></button>
+            <nav class="w-full text-center sm:mr-auto" v-if="last_page > 1 && last_page > page">
+              <button class="btn btn-default" @click="page++; getAttachments()">Load More <LoadingIcon icon="puff" /></button>
             </nav>
           </div>
           <!-- END: Pagination -->
