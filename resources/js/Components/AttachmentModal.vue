@@ -242,7 +242,7 @@ const emits = defineEmits(['selected-image', 'remove'])
                   relative
                   zoom-in
                 "
-                @click.prevent="show_sidebar = true; selected_image = faker"
+                @click.self="show_sidebar = true; selected_image = faker"
               >
                 <div class="absolute left-0 top-0 mt-3 ml-3">
                   <input
@@ -258,7 +258,7 @@ const emits = defineEmits(['selected-image', 'remove'])
                 ></a>
                 <a
                   v-else-if="true"
-                  href=""
+                  href="javascript:;"
                   class="w-3/5 file__icon file__icon--image mx-auto"
                 >
                   <div class="file__icon--image__preview image-fit">
@@ -270,7 +270,7 @@ const emits = defineEmits(['selected-image', 'remove'])
                 </a>
                 <a
                   v-else
-                  href=""
+                  href="javascript:;"
                   class="w-3/5 file__icon file__icon--file mx-auto"
                 >
                   <div class="file__icon__file-name">
@@ -278,7 +278,7 @@ const emits = defineEmits(['selected-image', 'remove'])
                   </div>
                 </a>
                 <a
-                  href=""
+                  href="javascript:;"
                   class="block font-medium mt-4 text-center truncate"
                   >{{
                     faker.name
@@ -320,8 +320,8 @@ const emits = defineEmits(['selected-image', 'remove'])
               mt-6
             "
           >
-            <nav class="w-full sm:w-auto sm:mr-auto">
-              <button class="btn">Load More</button>
+            <nav class="w-full text-center sm:mr-auto">
+              <button class="btn">Load More <LoadingIcon icon="puff" /></button>
             </nav>
           </div>
           <!-- END: Pagination -->

@@ -800,7 +800,6 @@
 </template>
 
 <script setup>
-import { useDarkModeStore } from "@/stores/dark-mode";
 import { computed } from "vue";
 
 const props = defineProps({
@@ -814,8 +813,7 @@ const props = defineProps({
   },
 });
 
-const darkModeStore = useDarkModeStore();
 const iconColor = computed(() =>
-  !darkModeStore.darkMode ? props.color : "#ffffff"
+  props.color
 );
 </script>
