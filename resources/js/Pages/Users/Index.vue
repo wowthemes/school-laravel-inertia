@@ -1,7 +1,7 @@
 <script setup>
 import BreezeAuthenticatedLayout from "@/Layouts/Authenticated.vue";
-import { Head, Link } from "@inertiajs/inertia-vue3";
-import { onMounted, ref, defineProps, inject } from "vue";
+import { Head, Link, usePage } from "@inertiajs/inertia-vue3";
+import { onMounted, ref, defineProps, inject, provide } from "vue";
 import { Inertia } from '@inertiajs/inertia'
 
 
@@ -24,6 +24,14 @@ const per_page = ref(10);
 const timer = ref(null);
 const search_term = ref(null);
 const deleteConfirmationModal = ref(false);
+const delete_user_id = ref(0);
+// Success notification
+const successNotification = ref();
+provide("bind[successNotification]", (el) => {
+  // Binding
+  successNotification.value = el;
+});
+
 const moment = inject('moment');
 
 const makeRequest = () => {
@@ -32,6 +40,17 @@ const makeRequest = () => {
     url += `&search=${encodeURI(search_term.value)}`;
   }
   Inertia.visit(url)
+}
+
+const deleteUser = async () => {
+  deleteConfirmationModal.value = false
+  await Inertia.delete(`/users/delete/${delete_user_id.value}`);
+
+  setTimeout(() => {
+    if(_.get(usePage().props.value.flash, 'message')) {
+      successNotification.value.showToast();
+    }
+  }, 1000)
 }
 
 const searchTimeOut = () => {
@@ -54,12 +73,20 @@ onMounted(() => {
   if(props.search && props.search !== search_term.value) {
     search_term.value = props.search;
   }
+
 })
 </script>
 
 <template>
   <Head title="All Users" />
-
+  <!-- BEGIN: Notification Content -->
+  <Notification refKey="successNotification" class="flex" :options="{ duration: 3000, }">
+    <CheckCircleIcon class="text-danger" />
+    <div class="ml-4 mr-4">
+      <div class="font-medium">Message!</div>
+      <div class="text-slate-500 mt-1">{{ $page.props.flash.message }}</div>
+    </div>
+  </Notification>
   <BreezeAuthenticatedLayout>
     <template #header>
       <h2 class="intro-y text-lg font-medium mt-10">All Users</h2>
@@ -160,13 +187,13 @@ onMounted(() => {
               </td>
               <td class="table-report__action w-56">
                 <div class="flex justify-center items-center">
-                  <a class="flex items-center mr-3" href="javascript:;">
+                  <Link class="flex items-center mr-3" :href="route('users.edit', {id: item.id})">
                     <CheckSquareIcon class="w-4 h-4 mr-1" /> Edit
-                  </a>
+                  </Link>
                   <a
                     class="flex items-center text-danger"
                     href="javascript:;"
-                    @click="deleteConfirmationModal = true"
+                    @click="deleteConfirmationModal = true; delete_user_id = item.id"
                   >
                     <Trash2Icon class="w-4 h-4 mr-1" /> Delete
                   </a>
@@ -233,7 +260,7 @@ onMounted(() => {
           >
             Cancel
           </button>
-          <button type="button" class="btn btn-danger w-24">Delete</button>
+          <button @click.prevent="deleteUser()" type="button" class="btn btn-danger w-24">Delete</button>
         </div>
       </ModalBody>
     </Modal>

@@ -52,6 +52,43 @@ class UsersController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        if ($request->get('avatar')) {
+            $user->attachments()->sync( $request->get('avatar') );
+        }
+
         return redirect()->route('users.index');
+    }
+
+
+    public function edit(User $user, Request $request)
+    {
+        return Inertia::render('Users/CreateOrEdit', [
+            'head_title'    => sprintf('Edit %s', $user->name),
+            'user'          => $user,
+            'new_user'      => false
+        ]);
+    }
+
+    public function update(User $user, Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'max:50'],
+            'email' => ['required', 'max:50', 'email'],
+        ]);
+        // dd($request->name);
+        $user->email = $request->email;
+        $user->name = $request->name;
+        $user->save();
+
+        if ($request->get('avatar')) {
+            $user->attachments()->sync( $request->get('avatar') );
+        }
+        return redirect()->route('users.index');
+    }
+
+    public function delete(User $user) {
+        $user->delete();
+
+        return redirect()->route('users.index')->with('message', sprintf('User %s has been deleted', $user->name));
     }
 }

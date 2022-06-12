@@ -37,15 +37,16 @@ Route::get('/students', [StudentsController::class, 'index'])->middleware('auth'
 Route::prefix('users')->controller(UsersController::class)->name('users.')->middleware(['auth', 'verified'])->group(function() {
     Route::get('/create', 'create')->name('create');
     Route::post('/store', 'store')->name('store');
-    Route::get('/edit/{id}', 'index')->name('edit');
-    Route::patch('/update/{id}', 'index')->name('update');
+    Route::get('/edit/{user:id}', 'edit')->name('edit');
+    Route::patch('/update/{user:id}', 'update')->name('update');
+    Route::delete('/delete/{user:id}', 'delete')->name('delete');
     Route::get('/', 'index')->name('index');
 });
 
 Route::prefix('attachments')->controller(AttachmentsController::class)->name('attachments.')->middleware(['auth', 'verified'])->group(function() {
     // Route::get('/create', 'create')->name('create');
     Route::post('/store', 'store')->name('store');
-    // Route::get('/edit/{id}', 'index')->name('edit');
+    // Route::get('/edit/{attachment:id}', 'edit')->name('edit');
     Route::patch('/update/{attachment:id}', 'update')->name('update');
     Route::get('/', 'index')->name('index');
 });

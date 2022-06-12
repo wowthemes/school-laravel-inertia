@@ -1,10 +1,11 @@
 <script setup>
-import { defineProps, ref, onMounted, defineEmits } from "vue";
+import { defineProps, ref, onMounted, defineEmits, provide } from "vue";
 import { usePage, useForm } from '@inertiajs/inertia-vue3'
 import { Inertia } from "@inertiajs/inertia";
 
-defineProps({
+const props = defineProps({
   show: Boolean,
+  image: Object,
 });
 
 const showModal = ref(false);
@@ -15,21 +16,31 @@ const selected_image = ref(null);
 const show_sidebar = ref(false);
 const page = ref(1);
 const last_page = ref(1);
+const processing = ref(false);
+const xhr_error = ref(null);
+
+// Success notification
+const successNotification = ref();
+provide("bind[successNotification]", (el) => {
+  // Binding
+  successNotification.value = el;
+});
 
 const insertImage = (img) => {
-  emit('selected-image', faker.id); 
+  emits('selected-image', img.id); 
   showModal.value = false; 
-  selected_image.value = faker.url;
+  // selected_image.value = img.url;
+  show_sidebar.value = false
 }
 
 const saveImageDetails = () => {
-  const form = useForm(selected_image.value)
   axios.patch(`/attachments/update/${selected_image.value.id}`, selected_image.value)
   .then(res => {
 
   })
 }
 const getAttachments = () => {
+  processing.value = true
   axios.get('/attachments', {params: {page: page.value}})
   .then(res => {
     if(_.size(res.data.data)) {
@@ -38,10 +49,19 @@ const getAttachments = () => {
       })
     }
     last_page.value = res.data.last_page
+    processing.value = false
+  })
+  .catch(error => {
+    processing.value = false;
+    xhr_error.value = error
+    successNotification.value.showToast();
   })
 }
 onMounted(() => {
   getAttachments();
+  if(props.image) {
+    selected_image.value = props.image
+  }
 })
 const emits = defineEmits(['selected-image', 'remove'])
 </script>
@@ -55,6 +75,14 @@ const emits = defineEmits(['selected-image', 'remove'])
       >Select Image</a
     >
   </div>
+  <!-- BEGIN: Notification Content -->
+  <Notification refKey="successNotification" class="flex" :options="{ duration: 3000, }">
+    <CheckCircleIcon class="text-danger" />
+    <div class="ml-4 mr-4">
+      <div class="font-medium">There is an error!</div>
+      <div class="text-slate-500 mt-1">{{ xhr_error }}</div>
+    </div>
+  </Notification>
   <!-- BEGIN: Modal Content -->
   <Modal :show="showModal" @hidden="showModal = false" size="modal-xl">
     <ModalBody>
@@ -355,7 +383,7 @@ const emits = defineEmits(['selected-image', 'remove'])
               <textarea @focusout="saveImageDetails()" v-model="selected_image.description" placeholder="Description" class="form-control"></textarea>
             </div>
 
-            <button class="btn btn-primary mr-3" @click.prevent="showModal = false; show_sidebar = false">Insert</button>
+            <button class="btn btn-primary mr-3" @click.prevent="insertImage(selected_image)">Insert</button>
             <button class="btn btn-default" @click.prevent="selected_image = {}; show_sidebar = false">Cancel</button>
           </form>
         </div>

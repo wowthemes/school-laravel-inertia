@@ -1,17 +1,23 @@
 <script setup>
-import { ref } from "vue";
+import { ref, provide, onMounted } from "vue";
 import BreezeApplicationLogo from "@/Components/ApplicationLogo.vue";
 import BreezeDropdown from "@/Components/Dropdown.vue";
 import BreezeDropdownLink from "@/Components/DropdownLink.vue";
 import BreezeNavLink from "@/Components/NavLink.vue";
 import BreezeResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/inertia-vue3";
 import TopBar from "@/Components/TopBar.vue";
 
 const showingNavigationDropdown = ref(false);
+
+
+onMounted(() => {
+  
+})
 </script>
 
 <template>
+  
   <div class="flex mt-[4.7rem] md:mt-0">
     <div class="side-nav">
       <Link :href="route('dashboard')" class="block w-2/4 text-white">

@@ -2,7 +2,7 @@
 import BreezeAuthenticatedLayout from "@/Layouts/Authenticated.vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import { Inertia } from '@inertiajs/inertia'
-import { defineProps, ref } from 'vue';
+import { defineProps, ref, onMounted } from 'vue';
 import AttachmentModal from "@/Components/AttachmentModal.vue";
 
 const props = defineProps({
@@ -10,7 +10,8 @@ const props = defineProps({
   new_user: {
     type: Boolean,
     default: true
-  }
+  },
+  user: Object
 })
 
 const form = useForm({
@@ -24,8 +25,20 @@ const form = useForm({
 const showModal = ref(false);
 
 const submit = () => {
-  Inertia.post('/users/store', form)
+  console.log(props.new_user)
+  if(props.new_user) {
+    Inertia.post('/users/store', form)
+  } else {
+    Inertia.patch(`/users/upadte/${props.user.id}`, form)
+  }
 }
+
+onMounted(() => {
+  if(props.user.id) {
+    form.name = props.user.name
+    form.email = props.user.email
+  }
+})
 </script>
 
 <template>
@@ -43,10 +56,10 @@ const submit = () => {
           >
             <h2 class="font-medium text-base mr-auto">Basic Details</h2>
           </div>
-          <form @submit.prevent="form.post('/users/store')">
+          <form @submit.prevent="new_user ? form.post('/users/store') : form.patch(`/users/update/${props.user.id}`)">
             <div class="p-5">
               
-              <AttachmentModal @selected-image="form.avatar = $event" @remove="form.avatar = 0" />
+              <AttachmentModal :image="user.attachments ? user.attachments[0] : {}" @selected-image="form.avatar = $event" @remove="form.avatar = 0" />
 
               <div class="mt-3">
                 <label for="regular-form-1" class="form-label">Name</label>

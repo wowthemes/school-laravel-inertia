@@ -42,6 +42,9 @@ class HandleInertiaRequests extends Middleware
                 return (new Ziggy)->toArray();
             },
             'csrf'  => csrf_token(),
+            'flash' => [
+                'message' => fn () => $request->session()->get('message')
+            ],
         ]);
     }
 }
