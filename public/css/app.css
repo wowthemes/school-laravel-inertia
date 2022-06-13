@@ -2368,9 +2368,9 @@ select{
     --tw-text-opacity: 1;
     color: rgb(17 24 39 / var(--tw-text-opacity));
 }
-.text-success{
+.text-danger{
     --tw-text-opacity: 1;
-    color: rgb(var(--color-success) / var(--tw-text-opacity));
+    color: rgb(var(--color-danger) / var(--tw-text-opacity));
 }
 .text-slate-500{
     --tw-text-opacity: 1;
@@ -2399,9 +2399,9 @@ select{
     --tw-text-opacity: 1;
     color: rgb(22 163 74 / var(--tw-text-opacity));
 }
-.text-danger{
+.text-success{
     --tw-text-opacity: 1;
-    color: rgb(var(--color-danger) / var(--tw-text-opacity));
+    color: rgb(var(--color-success) / var(--tw-text-opacity));
 }
 .underline{
     -webkit-text-decoration-line: underline;

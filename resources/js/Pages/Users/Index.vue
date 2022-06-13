@@ -81,7 +81,7 @@ onMounted(() => {
   <Head title="All Users" />
   <!-- BEGIN: Notification Content -->
   <Notification refKey="successNotification" class="flex" :options="{ duration: 3000, }">
-    <CheckCircleIcon class="text-danger" />
+    <CheckCircleIcon class="text-success" />
     <div class="ml-4 mr-4">
       <div class="font-medium">Message!</div>
       <div class="text-slate-500 mt-1">{{ $page.props.flash.message }}</div>

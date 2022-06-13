@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rules\Password;
 
 class UsersController extends Controller
 {
@@ -36,6 +37,7 @@ class UsersController extends Controller
     {
         return Inertia::render('Users/CreateOrEdit', [
             'head_title'    => __('Create new User'),
+            'user'  => []
         ]);
     }
 
@@ -44,7 +46,16 @@ class UsersController extends Controller
         $data = $request->validate([
             'name' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', 'unique:users,email'],
-            'password' => ['required', 'max:50', 'min:10', 'confirmed', Rules\Password::defaults()],
+            'password' => [
+                'required', 
+                'confirmed', 
+                Password::min(12)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
+            ],
         ]);
         $user = User::create([
             'name' => $request->name,
@@ -90,5 +101,30 @@ class UsersController extends Controller
         $user->delete();
 
         return redirect()->route('users.index')->with('message', sprintf('User %s has been deleted', $user->name));
+    }
+
+    public function changePassword(User $user, Request $request)
+    {
+        if (! Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Invalid current password']);
+        }
+        $request->validate([
+            // 'current_password'  => 'current_password',
+            'password'  => [
+                'required', 
+                'confirmed', 
+                Password::min(12)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
+            ],
+            // 'password_confirmation ' => '',
+        ]);
+
+        $user->password = Hash::make( $request->password );
+        $user->save();
+        return redirect()->back()->with('message', 'Password has been updated');
     }
 }

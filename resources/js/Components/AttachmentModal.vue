@@ -12,7 +12,7 @@ const showModal = ref(false);
 const showdropzone = ref(false);
 const dropzoneSingleRef = ref(null);
 const attachments = ref([]);
-const selected_image = ref(null);
+const selected_image = ref({});
 const show_sidebar = ref(false);
 const page = ref(1);
 const last_page = ref(1);
@@ -70,7 +70,7 @@ const emits = defineEmits(['selected-image', 'remove'])
   <!-- BEGIN: Modal Toggle -->
   <div class="text-center">
     <img :src="selected_image.url" v-if="selected_image" class="inline-block rounded-md shadow" style="width: 150px;height:auto;" /><br/>
-    <a href="javascript:;" v-if="selected_image" class="btn mt-3 mr-3" @click.prevent="selected_image = ''; $emit('remove')">Remove</a>
+    <a href="javascript:;" v-if="selected_image.url" class="btn mt-3 mr-3" @click.prevent="selected_image = {}; $emit('remove')">Remove</a>
     <a href="javascript:;" @click="showModal = true" class="btn btn-primary mt-4"
       >Select Image</a
     >

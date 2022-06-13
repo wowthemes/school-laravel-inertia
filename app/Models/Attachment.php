@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\AttachmentFactory;
 use Exception;
 use Illuminate\Contracts\Filesystem\Cloud;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -76,6 +77,7 @@ class Attachment extends Model
         'extension',
         'disk',
     ];
+
 
     /**
      * @return BelongsTo

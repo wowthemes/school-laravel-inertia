@@ -40,6 +40,7 @@ Route::prefix('users')->controller(UsersController::class)->name('users.')->midd
     Route::get('/edit/{user:id}', 'edit')->name('edit');
     Route::patch('/update/{user:id}', 'update')->name('update');
     Route::delete('/delete/{user:id}', 'delete')->name('delete');
+    Route::post('/change-password/{user:id}', 'changePassword')->name('change-password');
     Route::get('/', 'index')->name('index');
 });
 

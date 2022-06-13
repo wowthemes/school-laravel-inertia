@@ -22,6 +22,12 @@ const form = useForm({
   avatar: 0,
 });
 
+const password_form = useForm({
+  current_password: '',
+  password: '',
+  password_confirmation: '',
+});
+
 const showModal = ref(false);
 
 const submit = () => {
@@ -111,14 +117,16 @@ onMounted(() => {
           >
             <h2 class="font-medium text-base mr-auto">Change Password</h2>
           </div>
-          <div class="p-5">
+          <form class="p-5" @submit.prevent="password_form.post(route('users.change-password', {id: user.id}))">
             <div>
               <label for="regular-form-1" class="form-label">Current Password</label>
               <input
                 type="password"
                 class="form-control"
                 placeholder="Password"
+                v-model="password_form.current_password"
               />
+              <div class="text-danger mt-2" v-if="password_form.errors.current_password">{{ password_form.errors.current_password }}</div>
             </div>
             <div class="mt-3">
               <label for="regular-form-1" class="form-label">New Password</label>
@@ -126,7 +134,9 @@ onMounted(() => {
                 type="password"
                 class="form-control"
                 placeholder="New Password"
+                v-model="password_form.password"
               />
+              <div class="text-danger mt-2" v-if="password_form.errors.password">{{ password_form.errors.password }}</div>
             </div>
             <div class="mt-3">
               <label for="regular-form-1" class="form-label">Re-enter New Password</label>
@@ -134,9 +144,14 @@ onMounted(() => {
                 type="password"
                 class="form-control"
                 placeholder="Re-enter New Password"
+                v-model="password_form.password_confirmation"
               />
+              <div class="text-danger mt-2" v-if="password_form.errors.password_confirmation">{{ password_form.errors.password_confirmation }}</div>
             </div>
-          </div>
+            <div class="mt-3">
+              <button type="submit" class="btn btn-primary" :disabled="password_form.processing">Change Password</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

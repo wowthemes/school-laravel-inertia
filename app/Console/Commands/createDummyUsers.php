@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Attachment;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -28,14 +29,22 @@ class createDummyUsers extends Command
      */
     public function handle()
     {
+        // $attachment = Attachment::factory()->create([
+        //     'user_id'   => 1,
+        // ]);
+        // dd($attachment);
         $totalCreateUser = $this->argument('count');
 
         for ($i = 0; $i < $totalCreateUser; $i++) { 
             if( $i % 2 ) {
-                User::factory()->create();
+                $user = User::factory()->create();
             } else {
-                User::factory()->unverified()->create();
+                $user = User::factory()->unverified()->create();
             }
+            $attachment = Attachment::factory()->create([
+                'user_id'   => $user->id,
+            ]);
+            $user->attachments()->sync([$attachment->id]);
         }
     }
 }
